@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 // 
 require('./env');
+const cryptoController = require('./modules/crypto/crypto.controller');
 
 
 
@@ -22,6 +23,8 @@ app.use((req, res, next) => {
     if (req.query) console.log('QUERY\n', req.query);
     next();
 });
+
+app.use('/api', cryptoController);
 
 app.listen(port, err => {
     console.log('--- Server --- listen ERROR  = ', err);
