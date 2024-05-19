@@ -9,10 +9,8 @@ function sendSuccess(res) {
     res.status(201);
 }
 
-function sendResult(res, payload) {
-    res.status(200).json({
-        payload: payload,
-    });
+function sendResult(res, data) {
+    res.status(200).json(data);
 }
 
 module.exports = {

@@ -57,17 +57,18 @@
 
     - `POST: /crypto`
 
-        Сервис шифрует payload с помощью ключа public_key. \
+        Сервис шифрует original_data с помощью ключа public_key. \
         Зашифрованные данные храняться в Redis 1 час.
 
         ```
         request_body = {  
-            payload     = { ... },
-            public_key  = '...',
+            original_data   = { ... },
+            public_key      = '...',
         }
         response_data = {
             status: 400, 201
             error       = ...,
+            id_object   = ...,
         }
         ```
 
@@ -84,8 +85,8 @@
         }
         response_data = {
             status: 400, 200
-            error       = ...,
-            payload     = { ... },
+            error           = ...,
+            original_data   = { ... },
         }
         ```
         

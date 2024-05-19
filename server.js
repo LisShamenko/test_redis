@@ -1,15 +1,27 @@
 const express = require('express');
 const cors = require('cors');
+const { Redis } = require('ioredis');
 // 
 require('./env');
 const cryptoController = require('./modules/crypto/crypto.controller');
 
 
 
-// 
-const port = process.env.PORT || 3000;
+// redis
+const redisPort = process.env.REDIS_PORT || 6379;
+const redisHost = process.env.REDIS_HOST || '192.168.0.102';
+const redisPassword = process.env.REDIS_PASSWORD || 'admin';
+const redisExpire = process.env.REDIS_EXPIRE || 60;
+
+const redis = new Redis(redisPort, redisHost, {
+    password: redisPassword
+});
+
+
 
 // server
+const port = process.env.PORT || 3000;
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -24,7 +36,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/api', cryptoController);
+app.use('/api', cryptoController(redis, redisExpire));
 
 app.listen(port, err => {
     console.log('--- Server --- listen ERROR  = ', err);
