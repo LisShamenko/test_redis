@@ -38,6 +38,18 @@ app.use((req, res, next) => {
 
 app.use('/api', cryptoController(redis, redisExpire, logger));
 
+app.use((err, req, res, next) => {
+    if (err) {
+        logger.error(`ERROR = ${JSON.stringify(err)}\n`);
+        return res.status(err.statusCode || 500).json(err.message);
+    }
+    next();
+});
+
+process.on('uncaughtException', function (err) {
+    logger.error(`ERROR = ${JSON.stringify(err)}\n`);
+})
+
 app.listen(port, err => {
     console.log('--- Server --- listen ERROR  = ', err);
     console.log(`--- http://localhost:${port}`);
