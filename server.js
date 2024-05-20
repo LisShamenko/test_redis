@@ -3,6 +3,7 @@ const cors = require('cors');
 const { Redis } = require('ioredis');
 // 
 require('./env');
+const logger = require('./modules/logger/winston');
 const cryptoController = require('./modules/crypto/crypto.controller');
 
 
@@ -28,15 +29,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
-    console.log('--------------------------------');
-    console.log('METHOD = ', req.method);
-    if (req.body) console.log('BODY\n', req.body);
-    if (req.params) console.log('PARAMS\n', req.params);
-    if (req.query) console.log('QUERY\n', req.query);
+    logger.info(`METHOD = ${req.method}`);
+    if (req.body) logger.info(`BODY = ${JSON.stringify(req.body)}\n`);
+    if (req.params) logger.info(`PARAMS = ${JSON.stringify(req.params)}`);
+    if (req.query) logger.info(`QUERY = ${JSON.stringify(req.query)}`);
     next();
 });
 
-app.use('/api', cryptoController(redis, redisExpire));
+app.use('/api', cryptoController(redis, redisExpire, logger));
 
 app.listen(port, err => {
     console.log('--- Server --- listen ERROR  = ', err);

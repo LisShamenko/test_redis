@@ -3,30 +3,57 @@ const crypto = require("crypto");
 
 
 // 
+let logger;
+
 function encrypt(originalData, publicKey) {
-    const result = crypto.publicEncrypt(
-        {
-            key: publicKey,
-            padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-            oaepHash: "sha256",
-        },
-        Buffer.from(originalData)
-    );
-    return result.toString("base64");
+    try {
+        const encryptedData = crypto.publicEncrypt(
+            {
+                key: publicKey,
+                padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+                oaepHash: "sha256",
+            },
+            Buffer.from(originalData)
+        );
+        const result = encryptedData.toString("base64");
+        logger.info('--- crypto ENCRYPT');
+        return result;
+    }
+    catch (err) {
+        // only testing
+        logger.error(`
+            --- crypto ENCRYPT ERROR: ${err}
+            --- originalData = ${originalData}
+            --- publicKey = ${publicKey}`);
+    }
 }
 
 function decrypt(encryptedData, privateKey) {
-    const result = crypto.privateDecrypt(
-        {
-            key: privateKey,
-            padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-            oaepHash: "sha256",
-        },
-        Buffer.from(encryptedData, 'base64')
-    )
-    return result.toString();
+    try {
+        const originalData = crypto.privateDecrypt(
+            {
+                key: privateKey,
+                padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+                oaepHash: "sha256",
+            },
+            Buffer.from(encryptedData, 'base64')
+        )
+        const result = originalData.toString();
+        logger.info('--- crypto DECRYPT');
+        return result;
+    }
+    catch (err) {
+        // only testing
+        logger.error(`
+            --- crypto DECRYPT ERROR: ${err}
+            --- encryptedData = ${encryptedData}
+            --- privateKey = ${privateKey}`);
+    }
 }
 
-module.exports = {
-    encrypt, decrypt,
+module.exports = (inLogger) => {
+    logger = inLogger;
+    return {
+        encrypt, decrypt,
+    }
 };

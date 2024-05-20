@@ -1,13 +1,16 @@
 const express = require("express");
 //
-const cryptoService = require('./crypto.service');
-const responseService = require('./response.service');
-const redisService = require('./redis.service');
+const cryptoServiceFactory = require('./crypto.service');
+const responseServiceFactory = require('./response.service');
+const redisServiceFactory = require('./redis.service');
 
 
 
 //
-let redis;
+let cryptoService;
+let responseService;
+let redisService;
+let logger;
 const router = express.Router();
 
 router.post('/crypto', async (req, res) => {
@@ -17,7 +20,7 @@ router.post('/crypto', async (req, res) => {
     }
 
     const encryptedData = cryptoService.encrypt(req.body.original_data, req.body.public_key);
-    const id = await redis.setData(encryptedData);
+    const id = await redisService.setData(encryptedData);
 
     responseService.sendResult(res, {
         id_object: id,
@@ -31,7 +34,7 @@ router.post('/decrypto', async (req, res) => {
         return responseService.sendError(res, 'Wrong data.');
     }
 
-    const encryptedData = await redis.getData(req.body.id_object);
+    const encryptedData = await redisService.getData(req.body.id_object);
     if (!encryptedData) {
         return responseService.sendError(res, 'The object ID is invalid or the object has expired.');
     }
@@ -45,7 +48,10 @@ router.post('/decrypto', async (req, res) => {
 
 
 // 
-module.exports = (inRedis, inExpireSeconds) => {
-    redis = redisService(inRedis, inExpireSeconds);
+module.exports = (inRedis, inExpireSeconds, inLogger) => {
+    cryptoService = cryptoServiceFactory(inLogger);
+    responseService = responseServiceFactory(inLogger);
+    redisService = redisServiceFactory(inRedis, inExpireSeconds, inLogger);
+    logger = inLogger;
     return router;
 }

@@ -1,0 +1,28 @@
+version: '3'
+services:
+  redis:
+    image: redis:latest
+    container_name: my-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - my-network
+
+  node-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: my-node
+    ports:
+      - "3000:3000"
+    volumes:
+      - /test_redis/logs:/app/logs
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+    networks:
+      - my-network
+
+networks:
+  my-network:
