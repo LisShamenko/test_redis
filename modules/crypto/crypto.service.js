@@ -25,6 +25,7 @@ function encrypt(originalData, publicKey) {
             --- crypto ENCRYPT ERROR: ${err}
             --- originalData = ${originalData}
             --- publicKey = ${publicKey}`);
+        return null;
     }
 }
 
@@ -38,7 +39,7 @@ function decrypt(encryptedData, privateKey) {
             },
             Buffer.from(encryptedData, 'base64')
         )
-        const result = originalData.toString();
+        const result = JSON.parse(originalData.toString());
         logger.info('--- crypto DECRYPT');
         return result;
     }

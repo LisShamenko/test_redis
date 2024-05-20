@@ -4,6 +4,7 @@ const { Redis } = require('ioredis');
 // 
 require('./env');
 const logger = require('./modules/logger/winston');
+const swaggerDocs = require('./swagger');
 const cryptoController = require('./modules/crypto/crypto.controller');
 
 
@@ -24,6 +25,9 @@ const redis = new Redis(redisPort, redisHost, {
 const port = process.env.PORT || 3000;
 
 const app = express();
+
+swaggerDocs(app, port);
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

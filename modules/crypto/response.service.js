@@ -8,9 +8,9 @@ function sendError(res, message) {
     });
 }
 
-function sendSuccess(res) {
+function sendSuccess(res, data) {
     logger.info('Send success.');
-    res.status(201);
+    res.status(201).json(data);
 }
 
 function sendResult(res, data) {

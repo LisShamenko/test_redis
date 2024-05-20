@@ -10,7 +10,7 @@ let logger;
 async function setData(data) {
     try {
         const id = uuid.v4();
-        await redis.set(id, data, "EX", expireSeconds);
+        await redis.set(id, JSON.stringify(data), "EX", expireSeconds);
         logger.info(`--- redis SET data --- id = ${id}`);
         return id;
     }
